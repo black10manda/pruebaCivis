@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1037298477893",
+    "project_id": "pruebatecnica-1b3d7",
+    "storage_bucket": "pruebatecnica-1b3d7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1037298477893:android:16195c189166e317756c2c",
+        "android_client_info": {
+          "package_name": "com.prueba.prueba"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCfRIQkTqPp0gBTcZvPesOELrwfzfi8pK0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
