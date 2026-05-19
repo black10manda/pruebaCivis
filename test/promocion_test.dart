@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:prueba/features/promociones/domain/promocion.dart';
@@ -66,6 +67,55 @@ void main() {
       );
       final actualizado = draft.copyWith(removerImagen: true);
       expect(actualizado.imagenUrl, isNull);
+    });
+  });
+
+  group('Promocion.fromMap', () {
+    Map<String, dynamic> validData() => {
+      'titulo': 'Promo',
+      'descripcion': 'Desc',
+      'fecha': Timestamp.fromDate(DateTime(2026, 5, 18)),
+      'activo': true,
+      'creadoPor': 'uid-1',
+      'creadoEn': Timestamp.fromDate(DateTime(2026, 5, 1)),
+    };
+
+    test('parsea un documento válido', () {
+      final p = Promocion.fromMap('doc-1', validData());
+      expect(p.id, 'doc-1');
+      expect(p.titulo, 'Promo');
+      expect(p.creadoPor, 'uid-1');
+      expect(p.fecha, DateTime(2026, 5, 18));
+      expect(p.creadoEn, DateTime(2026, 5, 1));
+    });
+
+    test('lanza si data es null', () {
+      expect(
+        () => Promocion.fromMap('doc-1', null),
+        throwsA(isA<FormatException>()),
+      );
+    });
+
+    test('lanza si falta fecha', () {
+      final data = validData()..remove('fecha');
+      expect(
+        () => Promocion.fromMap('doc-1', data),
+        throwsA(isA<FormatException>()),
+      );
+    });
+
+    test('lanza si creadoPor está vacío', () {
+      final data = validData()..['creadoPor'] = '';
+      expect(
+        () => Promocion.fromMap('doc-1', data),
+        throwsA(isA<FormatException>()),
+      );
+    });
+
+    test('creadoEn nulo es válido (serverTimestamp pendiente)', () {
+      final data = validData()..['creadoEn'] = null;
+      final p = Promocion.fromMap('doc-1', data);
+      expect(p.creadoEn, isNull);
     });
   });
 }

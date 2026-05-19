@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../../shared/constants.dart';
 import '../domain/promocion.dart';
@@ -24,17 +25,22 @@ class PromocionesRepository {
   CollectionReference<Map<String, dynamic>> get _col =>
       _firestore.collection(FirestoreCollections.promociones);
 
-  Stream<List<Promocion>> watchAll() {
+  Stream<List<Promocion>> watchDelUsuario(String uid) {
     return _col
+        .where('creadoPor', isEqualTo: uid)
         .orderBy('fecha', descending: true)
         .snapshots()
-        .map((snap) => snap.docs.map(Promocion.fromFirestore).toList());
-  }
-
-  Future<Promocion?> obtener(String id) async {
-    final doc = await _col.doc(id).get();
-    if (!doc.exists) return null;
-    return Promocion.fromFirestore(doc);
+        .map((snap) {
+          final lista = <Promocion>[];
+          for (final doc in snap.docs) {
+            try {
+              lista.add(Promocion.fromFirestore(doc));
+            } catch (e) {
+              debugPrint('Promoción ${doc.id} omitida: $e');
+            }
+          }
+          return lista;
+        });
   }
 
   Future<String> subirImagen(File imagen) async {
@@ -73,18 +79,27 @@ class PromocionesRepository {
   }
 
   Future<void> actualizar(String id, PromocionDraft draft) async {
+    final docRef = _col.doc(id);
+
+    final snapshot = await docRef.get();
+    final urlPrevia = snapshot.data()?['imagenUrl'] as String?;
+
     String? imagenUrl = draft.imagenUrl;
     if (draft.imagen != null) {
       imagenUrl = await subirImagen(draft.imagen!);
     }
 
-    await _col.doc(id).update({
+    await docRef.update({
       'titulo': draft.titulo,
       'descripcion': draft.descripcion,
       'fecha': Timestamp.fromDate(draft.fecha),
       'imagenUrl': imagenUrl,
       'activo': draft.activo,
     });
+
+    if (urlPrevia != null && urlPrevia != imagenUrl) {
+      await _intentarBorrarImagen(urlPrevia);
+    }
   }
 
   Future<void> cambiarActivo(String id, bool activo) async {
@@ -96,6 +111,22 @@ class PromocionesRepository {
   }
 
   Future<void> eliminar(String id) async {
-    await _col.doc(id).delete();
+    final docRef = _col.doc(id);
+
+    final snapshot = await docRef.get();
+    final url = snapshot.data()?['imagenUrl'] as String?;
+
+    await docRef.delete();
+
+    await _intentarBorrarImagen(url);
+  }
+
+  Future<void> _intentarBorrarImagen(String? url) async {
+    if (url == null || url.isEmpty) return;
+    try {
+      await _storage.refFromURL(url).delete();
+    } catch (e) {
+      debugPrint('No se pudo borrar imagen $url: $e');
+    }
   }
 }

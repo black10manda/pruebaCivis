@@ -9,8 +9,10 @@ import '../../../core/widgets/fade_in_up.dart';
 import '../../../shared/constants.dart';
 import '../../auth/presentation/widgets/account_drawer.dart';
 import '../application/envio_controller.dart';
+import '../application/promocion_acciones_controller.dart';
 import '../application/promociones_providers.dart';
 import '../domain/promocion.dart';
+import 'widgets/eliminar_promocion_dialog.dart';
 import 'widgets/filtro_chips.dart';
 import 'widgets/gradient_fab.dart';
 import 'widgets/promocion_card.dart';
@@ -60,14 +62,26 @@ class ListaPromocionesScreen extends ConsumerWidget {
                         final p = lista[i];
                         return FadeInUp(
                           delay: Duration(milliseconds: 60 * i),
-                          child: PromocionCard(
-                            promocion: p,
-                            enviando: enviandoId == p.id,
-                            onTap: () => context.push(
-                              AppRoutes.editarPromocion,
-                              extra: p,
+                          child: Dismissible(
+                            key: ValueKey(p.id),
+                            direction: DismissDirection.endToStart,
+                            background: const _SwipeDeleteBackground(),
+                            confirmDismiss: (_) => EliminarPromocionDialog.show(
+                              context,
+                              titulo: p.titulo,
                             ),
-                            onEnviar: () => _enviar(context, ref, p),
+                            onDismissed: (_) => _eliminar(context, ref, p),
+                            child: PromocionCard(
+                              promocion: p,
+                              enviando: enviandoId == p.id,
+                              onTap: () => context.push(
+                                AppRoutes.editarPromocion,
+                                extra: p,
+                              ),
+                              onEnviar: () => _enviar(context, ref, p),
+                              onToggleActivo: () =>
+                                  _toggleActivo(context, ref, p),
+                            ),
                           ),
                         );
                       },
@@ -112,10 +126,100 @@ class ListaPromocionesScreen extends ConsumerWidget {
           content: Text(
             error == null
                 ? 'No se pudo enviar la promoción.'
-                : ErrorMapper.fromException(error),
+                : ErrorMapper.fromData(error),
           ),
         ),
       );
     }
+  }
+
+  Future<void> _toggleActivo(
+    BuildContext context,
+    WidgetRef ref,
+    Promocion promocion,
+  ) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final ok = await ref
+        .read(promocionAccionesControllerProvider.notifier)
+        .toggleActivo(promocion.id, !promocion.activo);
+
+    if (!context.mounted) return;
+    messenger.hideCurrentSnackBar();
+    if (!ok) {
+      final error = ref.read(promocionAccionesControllerProvider).error;
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            error == null
+                ? 'No se pudo actualizar el estado.'
+                : ErrorMapper.fromData(error),
+          ),
+        ),
+      );
+    }
+  }
+
+  Future<void> _eliminar(
+    BuildContext context,
+    WidgetRef ref,
+    Promocion promocion,
+  ) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final ok = await ref
+        .read(promocionAccionesControllerProvider.notifier)
+        .eliminar(promocion.id);
+
+    if (!context.mounted) return;
+    messenger.hideCurrentSnackBar();
+    if (ok) {
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Promoción eliminada')),
+      );
+    } else {
+      final error = ref.read(promocionAccionesControllerProvider).error;
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            error == null
+                ? 'No se pudo eliminar la promoción.'
+                : ErrorMapper.fromData(error),
+          ),
+        ),
+      );
+    }
+  }
+}
+
+class _SwipeDeleteBackground extends StatelessWidget {
+  const _SwipeDeleteBackground();
+
+  static const Color _destructive = Color(0xFFDC2626);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: _destructive,
+        borderRadius: BorderRadius.circular(20.r),
+      ),
+      alignment: Alignment.centerRight,
+      padding: EdgeInsets.only(right: 24.w),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.delete_outline_rounded, color: Colors.white, size: 22.sp),
+          SizedBox(width: 8.w),
+          Text(
+            'Eliminar',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+              fontSize: 14.sp,
+              letterSpacing: 0.1,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

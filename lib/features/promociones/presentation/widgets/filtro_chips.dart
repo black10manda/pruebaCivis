@@ -15,7 +15,10 @@ class FiltroChips extends ConsumerWidget {
     final inactivas = ref.watch(promocionesInactivasCountProvider);
     final enviadas = ref.watch(promocionesEnviadasCountProvider);
     final noEnviadas = ref.watch(promocionesNoEnviadasCountProvider);
-    final total = activas + inactivas;
+    final total = ref.watch(promocionesStreamProvider).maybeWhen(
+          data: (list) => list.length,
+          orElse: () => 0,
+        );
 
     final items = <_FiltroItem>[
       _FiltroItem(FiltroPromociones.todas, 'Todas', total),

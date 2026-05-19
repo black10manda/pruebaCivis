@@ -5,7 +5,19 @@ class ErrorMapper {
       'No se pudo iniciar sesión. Intenta de nuevo.';
   static const String _genericoData = 'Ocurrió un error. Intenta de nuevo.';
 
-  static String authFromCode(String? code) {
+  /// Mensaje para errores de Firebase Auth (login, registro, sign out).
+  static String fromAuth(Object error) {
+    final code = _extractCode(error);
+    return _authFromCode(code);
+  }
+
+  /// Mensaje para errores de Firestore / Storage (crear/editar/enviar promos).
+  static String fromData(Object error) {
+    final code = _extractCode(error);
+    return _dataFromCode(code);
+  }
+
+  static String _authFromCode(String? code) {
     switch (code) {
       case 'invalid-email':
         return 'El correo no es válido.';
@@ -30,11 +42,34 @@ class ErrorMapper {
     }
   }
 
-  static String fromException(Object error) {
-    final code = _extractCode(error);
-    if (code != null) return authFromCode(code);
-    return _genericoData;
+  static String _dataFromCode(String? code) {
+    switch (code) {
+      case 'permission-denied':
+      case 'unauthorized':
+        return 'No tienes permiso para realizar esta acción.';
+      case 'unavailable':
+        return 'Servicio no disponible. Intenta de nuevo en un momento.';
+      case 'deadline-exceeded':
+        return 'La operación tardó demasiado. Verifica tu conexión.';
+      case 'not-found':
+      case 'object-not-found':
+        return 'El recurso ya no existe.';
+      case 'cancelled':
+        return 'La operación fue cancelada.';
+      case 'resource-exhausted':
+        return 'Has alcanzado el límite. Intenta más tarde.';
+      case 'failed-precondition':
+        return 'No se pudo completar la operación. Revisa los datos.';
+      case 'network-request-failed':
+      case 'retry-limit-exceeded':
+        return 'Sin conexión. Verifica tu red.';
+      default:
+        return _genericoData;
+    }
   }
+
+  /// Conservado por compatibilidad con tests existentes.
+  static String authFromCode(String? code) => _authFromCode(code);
 
   static String? _extractCode(Object error) {
     try {

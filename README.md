@@ -177,30 +177,17 @@ lib/
 promociones/{timestamp}_{originalFilename}
 ```
 
-### Reglas mínimas (Firestore)
+### Reglas de seguridad
 
-```
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /promociones/{id} {
-      allow read, write: if request.auth != null;
-    }
-  }
-}
-```
+Versionadas en el repo:
 
-### Reglas mínimas (Storage)
+- [`firestore.rules`](firestore.rules) — sólo el creador (`creadoPor == request.auth.uid`) puede editar o borrar su promoción. Validación de tipos y longitudes en `create`.
+- [`storage.rules`](storage.rules) — escritura limitada a usuarios autenticados, archivos `image/*` y máx 5 MB.
 
-```
-rules_version = '2';
-service firebase.storage {
-  match /b/{bucket}/o {
-    match /promociones/{file=**} {
-      allow read, write: if request.auth != null;
-    }
-  }
-}
+Despliegue:
+
+```bash
+firebase deploy --only firestore:rules,storage
 ```
 
 ---

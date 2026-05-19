@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../application/auth_providers.dart';
-import '../../application/login_controller.dart';
 import 'logout_confirm_dialog.dart';
 import 'solicitante_sheet.dart';
 
@@ -14,10 +13,11 @@ class AccountDrawer extends ConsumerWidget {
   static const Color _destructive = Color(0xFFDC2626);
 
   Future<void> _handleLogout(BuildContext context, WidgetRef ref) async {
+    final authRepository = ref.read(authRepositoryProvider);
     Navigator.of(context).pop();
     final ok = await LogoutConfirmDialog.show(context);
     if (ok) {
-      await ref.read(loginControllerProvider.notifier).signOut();
+      await authRepository.signOut();
     }
   }
 

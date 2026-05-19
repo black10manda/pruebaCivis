@@ -14,10 +14,6 @@ class LoginController extends AutoDisposeAsyncNotifier<void> {
           .signIn(email: email, password: password);
     });
   }
-
-  Future<void> signOut() async {
-    await ref.read(authRepositoryProvider).signOut();
-  }
 }
 
 final loginControllerProvider =

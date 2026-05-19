@@ -38,7 +38,7 @@ void main() {
   });
 
   group('ErrorMapper', () {
-    test('mapea códigos conocidos', () {
+    test('mapea códigos conocidos de auth', () {
       expect(
         ErrorMapper.authFromCode('invalid-credential'),
         contains('incorrectos'),
@@ -52,5 +52,28 @@ void main() {
     test('mensaje genérico para código desconocido', () {
       expect(ErrorMapper.authFromCode('foo-bar'), isNotEmpty);
     });
+
+    test('fromData no devuelve mensajes de auth', () {
+      final fake = _FakeFirebaseError('permission-denied');
+      final msg = ErrorMapper.fromData(fake);
+      expect(msg, contains('permiso'));
+      expect(msg.toLowerCase(), isNot(contains('iniciar sesión')));
+    });
+
+    test('fromData mapea unavailable y deadline-exceeded', () {
+      expect(
+        ErrorMapper.fromData(_FakeFirebaseError('unavailable')),
+        contains('Servicio'),
+      );
+      expect(
+        ErrorMapper.fromData(_FakeFirebaseError('deadline-exceeded')),
+        contains('tardó'),
+      );
+    });
   });
+}
+
+class _FakeFirebaseError {
+  _FakeFirebaseError(this.code);
+  final String code;
 }

@@ -90,7 +90,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen>
           ScaffoldMessenger.of(context)
             ..hideCurrentSnackBar()
             ..showSnackBar(
-              SnackBar(content: Text(ErrorMapper.fromException(e))),
+              SnackBar(content: Text(ErrorMapper.fromAuth(e))),
             );
         },
       );

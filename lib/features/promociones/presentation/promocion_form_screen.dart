@@ -99,6 +99,9 @@ class _PromocionFormScreenState extends ConsumerState<PromocionFormScreen> {
     if (!_formKey.currentState!.validate()) return;
     FocusScope.of(context).unfocus();
 
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+
     final draft = PromocionDraft(
       id: widget.promocion?.id,
       titulo: _tituloController.text.trim(),
@@ -115,16 +118,13 @@ class _PromocionFormScreenState extends ConsumerState<PromocionFormScreen> {
 
     if (!mounted) return;
     if (id != null) {
-      ScaffoldMessenger.of(context)
+      final mensaje = widget.esEdicion
+          ? 'Promoción actualizada'
+          : 'Promoción creada';
+      navigator.pop();
+      messenger
         ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(
-            content: Text(
-              widget.esEdicion ? 'Promoción actualizada' : 'Promoción creada',
-            ),
-          ),
-        );
-      Navigator.of(context).pop();
+        ..showSnackBar(SnackBar(content: Text(mensaje)));
     }
   }
 
@@ -141,7 +141,7 @@ class _PromocionFormScreenState extends ConsumerState<PromocionFormScreen> {
           ScaffoldMessenger.of(context)
             ..hideCurrentSnackBar()
             ..showSnackBar(
-              SnackBar(content: Text(ErrorMapper.fromException(e))),
+              SnackBar(content: Text(ErrorMapper.fromData(e))),
             );
         },
       );

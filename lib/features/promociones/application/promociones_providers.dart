@@ -29,7 +29,7 @@ final promocionesStreamProvider = StreamProvider<List<Promocion>>((ref) {
   if (user == null) {
     return Stream.value(const <Promocion>[]);
   }
-  return ref.watch(promocionesRepositoryProvider).watchAll();
+  return ref.watch(promocionesRepositoryProvider).watchDelUsuario(user.uid);
 });
 
 final filtroPromocionesProvider = StateProvider<FiltroPromociones>((ref) {

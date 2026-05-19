@@ -8,7 +8,7 @@ class Promocion {
     required this.fecha,
     required this.activo,
     required this.creadoPor,
-    required this.creadoEn,
+    this.creadoEn,
     this.imagenUrl,
     this.enviadaEn,
   });
@@ -19,24 +19,44 @@ class Promocion {
   final DateTime fecha;
   final bool activo;
   final String creadoPor;
-  final DateTime creadoEn;
+
+  /// Puede ser null momentáneamente: al crear con `serverTimestamp()`,
+  /// el snapshot local llega antes de que el servidor confirme el valor.
+  final DateTime? creadoEn;
+
   final String? imagenUrl;
   final DateTime? enviadaEn;
 
   bool get yaEnviada => enviadaEn != null;
 
   factory Promocion.fromFirestore(DocumentSnapshot<Map<String, dynamic>> doc) {
-    final data = doc.data() ?? const <String, dynamic>{};
+    return Promocion.fromMap(doc.id, doc.data());
+  }
+
+  factory Promocion.fromMap(String id, Map<String, dynamic>? data) {
+    if (data == null) {
+      throw FormatException('Promoción $id sin datos.');
+    }
+
+    final fecha = _toDate(data['fecha']);
+    final creadoPor = data['creadoPor'];
+    if (fecha == null) {
+      throw FormatException('Promoción $id: campo "fecha" inválido.');
+    }
+    if (creadoPor is! String || creadoPor.isEmpty) {
+      throw FormatException('Promoción $id: campo "creadoPor" inválido.');
+    }
+
     return Promocion(
-      id: doc.id,
+      id: id,
       titulo: data['titulo'] as String? ?? '',
       descripcion: data['descripcion'] as String? ?? '',
-      fecha: _toDate(data['fecha']) ?? DateTime.now(),
+      fecha: fecha,
       activo: data['activo'] as bool? ?? true,
       imagenUrl: data['imagenUrl'] as String?,
       enviadaEn: _toDate(data['enviadaEn']),
-      creadoPor: data['creadoPor'] as String? ?? '',
-      creadoEn: _toDate(data['creadoEn']) ?? DateTime.now(),
+      creadoPor: creadoPor,
+      creadoEn: _toDate(data['creadoEn']),
     );
   }
 
