@@ -156,6 +156,55 @@ lib/
 
 ---
 
+## 🗄️ Firebase · esquema y reglas
+
+### Colección `promociones/{id}`
+
+| Campo | Tipo | Descripción |
+|---|---|---|
+| `titulo` | `string` | Requerido, máx 60 chars |
+| `descripcion` | `string` | Requerido, máx 280 chars |
+| `fecha` | `timestamp` | Fecha de la promoción |
+| `imagenUrl` | `string?` | URL pública en Storage (opcional) |
+| `activo` | `bool` | Visibilidad y elegibilidad para envío |
+| `enviadaEn` | `timestamp?` | `null` hasta que se envía |
+| `creadoPor` | `string` | `uid` del usuario que la creó |
+| `creadoEn` | `timestamp` | `serverTimestamp()` al crear |
+
+### Storage · ruta de imágenes
+
+```
+promociones/{timestamp}_{originalFilename}
+```
+
+### Reglas mínimas (Firestore)
+
+```
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /promociones/{id} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
+```
+
+### Reglas mínimas (Storage)
+
+```
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /promociones/{file=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
+```
+
+---
+
 ## 📦 Build de release
 
 ```bash
