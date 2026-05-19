@@ -10,7 +10,7 @@ class AppTheme {
     final colorScheme = ColorScheme.fromSeed(
       seedColor: _seed,
       brightness: Brightness.light,
-    );
+    ).copyWith(primary: _seed);
 
     return ThemeData(
       useMaterial3: true,
