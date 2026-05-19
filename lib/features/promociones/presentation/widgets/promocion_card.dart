@@ -9,12 +9,17 @@ class PromocionCard extends StatelessWidget {
     super.key,
     required this.promocion,
     this.onTap,
-    this.trailing,
+    this.onEnviar,
+    this.enviando = false,
   });
 
   final Promocion promocion;
   final VoidCallback? onTap;
-  final Widget? trailing;
+  final VoidCallback? onEnviar;
+  final bool enviando;
+
+  bool get _puedeEnviar =>
+      promocion.activo && !promocion.yaEnviada && onEnviar != null;
 
   @override
   Widget build(BuildContext context) {
@@ -59,23 +64,13 @@ class PromocionCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            promocion.titulo,
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w700,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        if (trailing != null) ...[
-                          const SizedBox(width: 8),
-                          trailing!,
-                        ],
-                      ],
+                    Text(
+                      promocion.titulo,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 6),
                     Text(
@@ -101,6 +96,22 @@ class PromocionCard extends StatelessWidget {
                             color: theme.colorScheme.onSurfaceVariant,
                           ),
                         ),
+                        if (promocion.enviadaEn != null) ...[
+                          const SizedBox(width: 12),
+                          Icon(
+                            Icons.send_outlined,
+                            size: 16,
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            DateFormat('d MMM', 'es')
+                                .format(promocion.enviadaEn!),
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                     const SizedBox(height: 12),
@@ -116,6 +127,28 @@ class PromocionCard extends StatelessWidget {
                           EstadoBadge.enviada(context),
                       ],
                     ),
+                    if (_puedeEnviar) ...[
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        child: FilledButton.icon(
+                          onPressed: enviando ? null : onEnviar,
+                          icon: enviando
+                              ? const SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2.4,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : const Icon(Icons.send_outlined),
+                          label: Text(
+                            enviando ? 'Enviando…' : 'Enviar promoción',
+                          ),
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),

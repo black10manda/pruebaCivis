@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/utils/error_mapper.dart';
 import '../../../core/widgets/async_value_view.dart';
 import '../../../shared/constants.dart';
 import '../../auth/application/login_controller.dart';
+import '../application/envio_controller.dart';
 import '../application/promociones_providers.dart';
 import '../domain/promocion.dart';
 import 'widgets/filtro_promociones.dart';
@@ -16,6 +18,26 @@ class ListaPromocionesScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(promocionesFiltradasProvider);
+    final enviandoId = ref.watch(enviandoIdProvider);
+
+    ref.listen<AsyncValue<void>>(envioControllerProvider, (_, next) {
+      next.whenOrNull(
+        data: (_) {
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+              const SnackBar(content: Text('Promoción enviada')),
+            );
+        },
+        error: (e, _) {
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+              SnackBar(content: Text(ErrorMapper.fromException(e))),
+            );
+        },
+      );
+    });
 
     return Scaffold(
       appBar: AppBar(
@@ -51,10 +73,12 @@ class ListaPromocionesScreen extends ConsumerWidget {
                       final p = lista[i];
                       return PromocionCard(
                         promocion: p,
+                        enviando: enviandoId == p.id,
                         onTap: () => context.push(
                           AppRoutes.editarPromocion,
                           extra: p,
                         ),
+                        onEnviar: () => _enviar(ref, p),
                       );
                     },
                   ),
@@ -70,6 +94,12 @@ class ListaPromocionesScreen extends ConsumerWidget {
         label: const Text('Nueva'),
       ),
     );
+  }
+
+  Future<void> _enviar(WidgetRef ref, Promocion promocion) async {
+    ref.read(enviandoIdProvider.notifier).state = promocion.id;
+    await ref.read(envioControllerProvider.notifier).enviar(promocion.id);
+    ref.read(enviandoIdProvider.notifier).state = null;
   }
 
   Future<void> _confirmarLogout(BuildContext context, WidgetRef ref) async {
