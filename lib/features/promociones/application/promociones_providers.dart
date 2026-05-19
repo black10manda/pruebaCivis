@@ -67,3 +67,12 @@ final promocionesInactivasCountProvider = Provider<int>((ref) {
         orElse: () => 0,
       );
 });
+
+final promocionesEnviadasCountProvider = Provider<int>((ref) {
+  return ref
+      .watch(promocionesStreamProvider)
+      .maybeWhen(
+        data: (list) => list.where((p) => p.yaEnviada).length,
+        orElse: () => 0,
+      );
+});

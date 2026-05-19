@@ -5,13 +5,17 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/utils/error_mapper.dart';
 import '../../../core/widgets/async_value_view.dart';
+import '../../../core/widgets/fade_in_up.dart';
 import '../../../shared/constants.dart';
 import '../../auth/application/login_controller.dart';
 import '../application/envio_controller.dart';
 import '../application/promociones_providers.dart';
 import '../domain/promocion.dart';
-import 'widgets/filtro_promociones.dart';
+import 'widgets/filtro_chips.dart';
+import 'widgets/gradient_fab.dart';
 import 'widgets/promocion_card.dart';
+import 'widgets/promociones_empty.dart';
+import 'widgets/promociones_header.dart';
 
 class ListaPromocionesScreen extends ConsumerWidget {
   const ListaPromocionesScreen({super.key});
@@ -20,58 +24,66 @@ class ListaPromocionesScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(promocionesFiltradasProvider);
     final enviandoId = ref.watch(enviandoIdProvider);
+    final cs = Theme.of(context).colorScheme;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Promociones'),
-        actions: [
-          IconButton(
-            tooltip: 'Cerrar sesión',
-            icon: const Icon(Icons.logout),
-            onPressed: () => _confirmarLogout(context, ref),
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          const FiltroPromocionesBar(),
-          Expanded(
-            child: AsyncValueView<List<Promocion>>(
-              value: async,
-              data: (lista) {
-                if (lista.isEmpty) {
-                  return const _EstadoVacio();
-                }
-                return RefreshIndicator(
-                  onRefresh: () async {
-                    ref.invalidate(promocionesStreamProvider);
-                  },
-                  child: ListView.separated(
-                    padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 96.h),
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    itemCount: lista.length,
-                    separatorBuilder: (_, _) => SizedBox(height: 12.h),
-                    itemBuilder: (context, i) {
-                      final p = lista[i];
-                      return PromocionCard(
-                        promocion: p,
-                        enviando: enviandoId == p.id,
-                        onTap: () =>
-                            context.push(AppRoutes.editarPromocion, extra: p),
-                        onEnviar: () => _enviar(context, ref, p),
-                      );
-                    },
-                  ),
-                );
-              },
+      backgroundColor: cs.surface,
+      body: SafeArea(
+        bottom: false,
+        child: Column(
+          children: [
+            PromocionesHeader(
+              onLogout: () => _confirmarLogout(context, ref),
             ),
-          ),
-        ],
+            const FiltroChips(),
+            SizedBox(height: 12.h),
+            Expanded(
+              child: AsyncValueView<List<Promocion>>(
+                value: async,
+                data: (lista) {
+                  if (lista.isEmpty) {
+                    final filtro = ref.watch(filtroPromocionesProvider);
+                    return PromocionesEmpty(
+                      filtro: filtro,
+                      onCrear: () => context.push(AppRoutes.nuevaPromocion),
+                    );
+                  }
+                  return RefreshIndicator(
+                    onRefresh: () async {
+                      ref.invalidate(promocionesStreamProvider);
+                    },
+                    child: ListView.separated(
+                      padding: EdgeInsets.fromLTRB(20.w, 4.h, 20.w, 108.h),
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      itemCount: lista.length,
+                      separatorBuilder: (_, _) => SizedBox(height: 14.h),
+                      itemBuilder: (context, i) {
+                        final p = lista[i];
+                        return FadeInUp(
+                          delay: Duration(milliseconds: 60 * i),
+                          child: PromocionCard(
+                            promocion: p,
+                            enviando: enviandoId == p.id,
+                            onTap: () => context.push(
+                              AppRoutes.editarPromocion,
+                              extra: p,
+                            ),
+                            onEnviar: () => _enviar(context, ref, p),
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: GradientFab(
+        label: 'Nueva',
+        icon: Icons.add_rounded,
         onPressed: () => context.push(AppRoutes.nuevaPromocion),
-        icon: const Icon(Icons.add),
-        label: const Text('Nueva'),
       ),
     );
   }
@@ -129,55 +141,5 @@ class ListaPromocionesScreen extends ConsumerWidget {
     if (confirmar == true) {
       await ref.read(loginControllerProvider.notifier).signOut();
     }
-  }
-}
-
-class _EstadoVacio extends ConsumerWidget {
-  const _EstadoVacio();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-    final filtro = ref.watch(filtroPromocionesProvider);
-
-    final mensaje = switch (filtro) {
-      FiltroPromociones.todas =>
-        'Aún no tienes promociones. Crea la primera con el botón "+".',
-      FiltroPromociones.activas => 'No hay promociones activas.',
-      FiltroPromociones.inactivas => 'No hay promociones inactivas.',
-    };
-
-    return Center(
-      child: Padding(
-        padding: EdgeInsets.all(32.w),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.campaign_outlined,
-              size: 56.sp,
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-            SizedBox(height: 16.h),
-            Text(
-              mensaje,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyLarge?.copyWith(
-                fontSize: 16.sp,
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-            if (filtro == FiltroPromociones.todas) ...[
-              SizedBox(height: 24.h),
-              FilledButton.icon(
-                onPressed: () => context.push(AppRoutes.nuevaPromocion),
-                icon: const Icon(Icons.add),
-                label: const Text('Crear promoción'),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
   }
 }

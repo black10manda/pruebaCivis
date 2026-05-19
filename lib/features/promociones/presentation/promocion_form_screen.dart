@@ -10,9 +10,14 @@ import '../../../core/utils/error_mapper.dart';
 import '../../../core/utils/validators.dart';
 import '../../../core/widgets/app_button.dart';
 import '../../../core/widgets/app_text_field.dart';
+import '../../../core/widgets/fade_in_up.dart';
 import '../application/promocion_form_controller.dart';
 import '../domain/promocion.dart';
 import '../domain/promocion_draft.dart';
+import 'widgets/form_header.dart';
+import 'widgets/promocion_date_field.dart';
+import 'widgets/promocion_image_picker.dart';
+import 'widgets/promocion_status_card.dart';
 
 class PromocionFormScreen extends ConsumerStatefulWidget {
   const PromocionFormScreen({super.key, this.promocion});
@@ -127,7 +132,7 @@ class _PromocionFormScreenState extends ConsumerState<PromocionFormScreen> {
   Widget build(BuildContext context) {
     final state = ref.watch(promocionFormControllerProvider);
     final isLoading = state.isLoading;
-    final theme = Theme.of(context);
+    final cs = Theme.of(context).colorScheme;
     final fechaFormateada = DateFormat('d MMM y', 'es').format(_fecha);
 
     ref.listen<AsyncValue<void>>(promocionFormControllerProvider, (_, next) {
@@ -145,99 +150,107 @@ class _PromocionFormScreenState extends ConsumerState<PromocionFormScreen> {
     return PopScope(
       canPop: !isLoading,
       child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            widget.esEdicion ? 'Editar promoción' : 'Nueva promoción',
-          ),
-        ),
+        backgroundColor: cs.surface,
         body: SafeArea(
           child: AbsorbPointer(
             absorbing: isLoading,
-            child: Center(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.all(20.w),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: 600.w),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        _ImagenPicker(
-                          imagen: _imagen,
-                          imagenUrl: _imagenUrl,
-                          onSeleccionar: _seleccionarImagen,
-                          onQuitar: _quitarImagen,
-                        ),
-                        SizedBox(height: 20.h),
-                        AppTextField(
-                          controller: _tituloController,
-                          label: 'Título',
-                          textInputAction: TextInputAction.next,
-                          maxLength: 60,
-                          validator: (v) => Validators.combinar([
-                            () => Validators.requerido(v, campo: 'Título'),
-                            () => Validators.longitudMaxima(
-                              v,
-                              max: 60,
-                              campo: 'Título',
+            child: Column(
+              children: [
+                FadeInUp(
+                  child: FormHeader(
+                    titulo: widget.esEdicion
+                        ? 'Editar promoción'
+                        : 'Nueva promoción',
+                    subtitulo: widget.esEdicion
+                        ? 'Actualiza los datos de tu promoción'
+                        : 'Completa los datos para crearla',
+                  ),
+                ),
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.fromLTRB(20.w, 8.h, 20.w, 24.h),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          FadeInUp(
+                            delay: const Duration(milliseconds: 80),
+                            child: PromocionImagePicker(
+                              imagen: _imagen,
+                              imagenUrl: _imagenUrl,
+                              onSeleccionar: _seleccionarImagen,
+                              onQuitar: _quitarImagen,
                             ),
-                          ]),
-                        ),
-                        SizedBox(height: 16.h),
-                        AppTextField(
-                          controller: _descripcionController,
-                          label: 'Descripción',
-                          textInputAction: TextInputAction.newline,
-                          maxLines: 4,
-                          minLines: 3,
-                          maxLength: 280,
-                          validator: (v) => Validators.combinar([
-                            () => Validators.requerido(v, campo: 'Descripción'),
-                            () => Validators.longitudMaxima(
-                              v,
-                              max: 280,
-                              campo: 'Descripción',
-                            ),
-                          ]),
-                        ),
-                        SizedBox(height: 16.h),
-                        _FechaTile(
-                          fecha: fechaFormateada,
-                          onTap: _seleccionarFecha,
-                        ),
-                        SizedBox(height: 12.h),
-                        Card(
-                          child: SwitchListTile(
-                            title: Text(
-                              'Activa',
-                              style: TextStyle(fontSize: 16.sp),
-                            ),
-                            subtitle: Text(
-                              _activo
-                                  ? 'Visible y disponible para envío'
-                                  : 'Oculta de envíos',
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                fontSize: 12.sp,
-                              ),
-                            ),
-                            value: _activo,
-                            onChanged: (v) => setState(() => _activo = v),
                           ),
-                        ),
-                        SizedBox(height: 28.h),
-                        AppButton(
-                          label: widget.esEdicion
-                              ? 'Guardar cambios'
-                              : 'Crear promoción',
-                          onPressed: _guardar,
-                          isLoading: isLoading,
-                        ),
-                      ],
+                          SizedBox(height: 20.h),
+                          FadeInUp(
+                            delay: const Duration(milliseconds: 140),
+                            child: AppTextField(
+                              controller: _tituloController,
+                              label: 'Título',
+                              textInputAction: TextInputAction.next,
+                              maxLength: 60,
+                              validator: (v) => Validators.combinar([
+                                () => Validators.requerido(v, campo: 'Título'),
+                                () => Validators.longitudMaxima(
+                                  v,
+                                  max: 60,
+                                  campo: 'Título',
+                                ),
+                              ]),
+                            ),
+                          ),
+                          SizedBox(height: 14.h),
+                          FadeInUp(
+                            delay: const Duration(milliseconds: 200),
+                            child: AppTextField(
+                              controller: _descripcionController,
+                              label: 'Descripción',
+                              textInputAction: TextInputAction.newline,
+                              maxLines: 4,
+                              minLines: 3,
+                              maxLength: 280,
+                              validator: (v) => Validators.combinar([
+                                () =>
+                                    Validators.requerido(v, campo: 'Descripción'),
+                                () => Validators.longitudMaxima(
+                                  v,
+                                  max: 280,
+                                  campo: 'Descripción',
+                                ),
+                              ]),
+                            ),
+                          ),
+                          SizedBox(height: 14.h),
+                          FadeInUp(
+                            delay: const Duration(milliseconds: 260),
+                            child: PromocionDateField(
+                              fechaFormateada: fechaFormateada,
+                              onTap: _seleccionarFecha,
+                            ),
+                          ),
+                          SizedBox(height: 12.h),
+                          FadeInUp(
+                            delay: const Duration(milliseconds: 320),
+                            child: PromocionStatusCard(
+                              activo: _activo,
+                              onChanged: (v) => setState(() => _activo = v),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
+                _BottomCta(
+                  label: widget.esEdicion
+                      ? 'Guardar cambios'
+                      : 'Crear promoción',
+                  isLoading: isLoading,
+                  onPressed: _guardar,
+                ),
+              ],
             ),
           ),
         ),
@@ -246,119 +259,34 @@ class _PromocionFormScreenState extends ConsumerState<PromocionFormScreen> {
   }
 }
 
-class _FechaTile extends StatelessWidget {
-  const _FechaTile({required this.fecha, required this.onTap});
-
-  final String fecha;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Card(
-      child: ListTile(
-        leading: Icon(
-          Icons.event_outlined,
-          color: theme.colorScheme.primary,
-          size: 24.sp,
-        ),
-        title: Text('Fecha', style: TextStyle(fontSize: 16.sp)),
-        subtitle: Text(fecha, style: TextStyle(fontSize: 14.sp)),
-        trailing: const Icon(Icons.chevron_right),
-        onTap: onTap,
-      ),
-    );
-  }
-}
-
-class _ImagenPicker extends StatelessWidget {
-  const _ImagenPicker({
-    required this.imagen,
-    required this.imagenUrl,
-    required this.onSeleccionar,
-    required this.onQuitar,
+class _BottomCta extends StatelessWidget {
+  const _BottomCta({
+    required this.label,
+    required this.isLoading,
+    required this.onPressed,
   });
 
-  final File? imagen;
-  final String? imagenUrl;
-  final VoidCallback onSeleccionar;
-  final VoidCallback onQuitar;
-
-  bool get _tieneImagen => imagen != null || imagenUrl != null;
+  final String label;
+  final bool isLoading;
+  final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return InkWell(
-      onTap: onSeleccionar,
-      borderRadius: BorderRadius.circular(16.r),
-      child: Container(
-        height: 180.h,
-        decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceContainerHighest.withValues(
-            alpha: 0.4,
+    final cs = Theme.of(context).colorScheme;
+    return Container(
+      padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 16.h),
+      decoration: BoxDecoration(
+        color: cs.surface,
+        border: Border(
+          top: BorderSide(
+            color: cs.outlineVariant.withValues(alpha: 0.6),
           ),
-          borderRadius: BorderRadius.circular(16.r),
-          border: Border.all(color: theme.colorScheme.outlineVariant),
         ),
-        clipBehavior: Clip.antiAlias,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            if (imagen != null)
-              Image.file(imagen!, fit: BoxFit.cover)
-            else if (imagenUrl != null)
-              Image.network(
-                imagenUrl!,
-                fit: BoxFit.cover,
-                errorBuilder: (_, _, _) =>
-                    const Center(child: Icon(Icons.broken_image_outlined)),
-              )
-            else
-              Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.add_photo_alternate_outlined,
-                      size: 40.sp,
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                    SizedBox(height: 8.h),
-                    Text(
-                      'Toca para agregar imagen (opcional)',
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontSize: 14.sp,
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            if (_tieneImagen)
-              Positioned(
-                top: 8.h,
-                right: 8.w,
-                child: Material(
-                  color: Colors.black54,
-                  shape: const CircleBorder(),
-                  child: InkWell(
-                    customBorder: const CircleBorder(),
-                    onTap: onQuitar,
-                    child: Padding(
-                      padding: EdgeInsets.all(6.w),
-                      child: Icon(
-                        Icons.close,
-                        color: Colors.white,
-                        size: 20.sp,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-          ],
-        ),
+      ),
+      child: AppButton(
+        label: label,
+        onPressed: onPressed,
+        isLoading: isLoading,
       ),
     );
   }
