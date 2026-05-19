@@ -13,12 +13,16 @@ class FiltroChips extends ConsumerWidget {
     final activo = ref.watch(filtroPromocionesProvider);
     final activas = ref.watch(promocionesActivasCountProvider);
     final inactivas = ref.watch(promocionesInactivasCountProvider);
+    final enviadas = ref.watch(promocionesEnviadasCountProvider);
+    final noEnviadas = ref.watch(promocionesNoEnviadasCountProvider);
     final total = activas + inactivas;
 
     final items = <_FiltroItem>[
       _FiltroItem(FiltroPromociones.todas, 'Todas', total),
       _FiltroItem(FiltroPromociones.activas, 'Activas', activas),
       _FiltroItem(FiltroPromociones.inactivas, 'Inactivas', inactivas),
+      _FiltroItem(FiltroPromociones.enviadas, 'Enviadas', enviadas),
+      _FiltroItem(FiltroPromociones.noEnviadas, 'No enviadas', noEnviadas),
     ];
 
     return SizedBox(

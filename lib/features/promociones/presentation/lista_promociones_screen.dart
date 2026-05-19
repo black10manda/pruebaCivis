@@ -7,8 +7,7 @@ import '../../../core/utils/error_mapper.dart';
 import '../../../core/widgets/async_value_view.dart';
 import '../../../core/widgets/fade_in_up.dart';
 import '../../../shared/constants.dart';
-import '../../auth/application/login_controller.dart';
-import '../../auth/presentation/widgets/logout_confirm_dialog.dart';
+import '../../auth/presentation/widgets/account_drawer.dart';
 import '../application/envio_controller.dart';
 import '../application/promociones_providers.dart';
 import '../domain/promocion.dart';
@@ -29,13 +28,12 @@ class ListaPromocionesScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: cs.surface,
+      endDrawer: const AccountDrawer(),
       body: SafeArea(
         bottom: false,
         child: Column(
           children: [
-            PromocionesHeader(
-              onLogout: () => _confirmarLogout(context, ref),
-            ),
+            const PromocionesHeader(),
             const FiltroChips(),
             SizedBox(height: 12.h),
             Expanded(
@@ -118,13 +116,6 @@ class ListaPromocionesScreen extends ConsumerWidget {
           ),
         ),
       );
-    }
-  }
-
-  Future<void> _confirmarLogout(BuildContext context, WidgetRef ref) async {
-    final confirmar = await LogoutConfirmDialog.show(context);
-    if (confirmar) {
-      await ref.read(loginControllerProvider.notifier).signOut();
     }
   }
 }

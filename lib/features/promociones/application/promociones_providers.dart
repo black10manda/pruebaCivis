@@ -6,7 +6,7 @@ import '../../auth/application/auth_providers.dart';
 import '../data/promociones_repository.dart';
 import '../domain/promocion.dart';
 
-enum FiltroPromociones { todas, activas, inactivas }
+enum FiltroPromociones { todas, activas, inactivas, enviadas, noEnviadas }
 
 final firestoreProvider = Provider<FirebaseFirestore>((ref) {
   return FirebaseFirestore.instance;
@@ -46,6 +46,9 @@ final promocionesFiltradasProvider = Provider<AsyncValue<List<Promocion>>>((
       FiltroPromociones.todas => list,
       FiltroPromociones.activas => list.where((p) => p.activo).toList(),
       FiltroPromociones.inactivas => list.where((p) => !p.activo).toList(),
+      FiltroPromociones.enviadas => list.where((p) => p.yaEnviada).toList(),
+      FiltroPromociones.noEnviadas =>
+        list.where((p) => !p.yaEnviada).toList(),
     };
   });
 });
@@ -73,6 +76,15 @@ final promocionesEnviadasCountProvider = Provider<int>((ref) {
       .watch(promocionesStreamProvider)
       .maybeWhen(
         data: (list) => list.where((p) => p.yaEnviada).length,
+        orElse: () => 0,
+      );
+});
+
+final promocionesNoEnviadasCountProvider = Provider<int>((ref) {
+  return ref
+      .watch(promocionesStreamProvider)
+      .maybeWhen(
+        data: (list) => list.where((p) => !p.yaEnviada).length,
         orElse: () => 0,
       );
 });

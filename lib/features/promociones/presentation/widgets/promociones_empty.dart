@@ -30,6 +30,14 @@ class PromocionesEmpty extends StatelessWidget {
         'Sin promociones inactivas',
         'Todas tus promociones están activas en este momento.',
       ),
+      FiltroPromociones.enviadas => (
+        'Sin promociones enviadas',
+        'Cuando envíes una promoción aparecerá aquí.',
+      ),
+      FiltroPromociones.noEnviadas => (
+        'Todas tus promociones fueron enviadas',
+        'No hay promociones pendientes de envío.',
+      ),
     };
 
     return Center(
