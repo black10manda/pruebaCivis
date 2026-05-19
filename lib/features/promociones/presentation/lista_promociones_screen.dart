@@ -8,6 +8,7 @@ import '../../../core/widgets/async_value_view.dart';
 import '../../../core/widgets/fade_in_up.dart';
 import '../../../shared/constants.dart';
 import '../../auth/application/login_controller.dart';
+import '../../auth/presentation/widgets/logout_confirm_dialog.dart';
 import '../application/envio_controller.dart';
 import '../application/promociones_providers.dart';
 import '../domain/promocion.dart';
@@ -121,24 +122,8 @@ class ListaPromocionesScreen extends ConsumerWidget {
   }
 
   Future<void> _confirmarLogout(BuildContext context, WidgetRef ref) async {
-    final confirmar = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Cerrar sesión'),
-        content: const Text('¿Deseas cerrar sesión?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancelar'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Cerrar sesión'),
-          ),
-        ],
-      ),
-    );
-    if (confirmar == true) {
+    final confirmar = await LogoutConfirmDialog.show(context);
+    if (confirmar) {
       await ref.read(loginControllerProvider.notifier).signOut();
     }
   }
