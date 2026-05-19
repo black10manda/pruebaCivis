@@ -4,7 +4,9 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/auth/application/auth_providers.dart';
 import '../../features/auth/presentation/login_screen.dart';
+import '../../features/promociones/domain/promocion.dart';
 import '../../features/promociones/presentation/lista_promociones_screen.dart';
+import '../../features/promociones/presentation/promocion_form_screen.dart';
 import '../../shared/constants.dart';
 
 final goRouterProvider = Provider<GoRouter>((ref) {
@@ -32,6 +34,19 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.home,
         builder: (context, state) => const ListaPromocionesScreen(),
+        routes: [
+          GoRoute(
+            path: 'nueva',
+            builder: (context, state) => const PromocionFormScreen(),
+          ),
+          GoRoute(
+            path: 'editar',
+            builder: (context, state) {
+              final promocion = state.extra as Promocion?;
+              return PromocionFormScreen(promocion: promocion);
+            },
+          ),
+        ],
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

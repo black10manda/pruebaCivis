@@ -7,8 +7,8 @@ class AppRoutes {
   const AppRoutes._();
   static const String login = '/login';
   static const String home = '/home';
-  static const String nuevaPromocion = '/promocion/nueva';
-  static const String editarPromocion = '/promocion/:id';
+  static const String nuevaPromocion = '/home/nueva';
+  static const String editarPromocion = '/home/editar';
 }
 
 class StoragePaths {
