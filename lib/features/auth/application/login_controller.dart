@@ -6,16 +6,12 @@ class LoginController extends AutoDisposeAsyncNotifier<void> {
   @override
   Future<void> build() async {}
 
-  Future<void> signIn({
-    required String email,
-    required String password,
-  }) async {
+  Future<void> signIn({required String email, required String password}) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
-      await ref.read(authRepositoryProvider).signIn(
-            email: email,
-            password: password,
-          );
+      await ref
+          .read(authRepositoryProvider)
+          .signIn(email: email, password: password);
     });
   }
 
@@ -26,5 +22,5 @@ class LoginController extends AutoDisposeAsyncNotifier<void> {
 
 final loginControllerProvider =
     AutoDisposeAsyncNotifierProvider<LoginController, void>(
-  LoginController.new,
-);
+      LoginController.new,
+    );

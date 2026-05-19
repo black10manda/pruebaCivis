@@ -13,9 +13,9 @@ class PromocionesRepository {
     required FirebaseFirestore firestore,
     required FirebaseStorage storage,
     required FirebaseAuth auth,
-  })  : _firestore = firestore,
-        _storage = storage,
-        _auth = auth;
+  }) : _firestore = firestore,
+       _storage = storage,
+       _auth = auth;
 
   final FirebaseFirestore _firestore;
   final FirebaseStorage _storage;
@@ -92,9 +92,7 @@ class PromocionesRepository {
   }
 
   Future<void> marcarEnviada(String id) async {
-    await _col.doc(id).update({
-      'enviadaEn': FieldValue.serverTimestamp(),
-    });
+    await _col.doc(id).update({'enviadaEn': FieldValue.serverTimestamp()});
   }
 
   Future<void> eliminar(String id) async {

@@ -25,9 +25,7 @@ class Promocion {
 
   bool get yaEnviada => enviadaEn != null;
 
-  factory Promocion.fromFirestore(
-    DocumentSnapshot<Map<String, dynamic>> doc,
-  ) {
+  factory Promocion.fromFirestore(DocumentSnapshot<Map<String, dynamic>> doc) {
     final data = doc.data() ?? const <String, dynamic>{};
     return Promocion(
       id: doc.id,

@@ -32,12 +32,18 @@ class AppButton extends StatelessWidget {
         : _Content(label: label, icon: icon);
 
     final button = switch (variant) {
-      AppButtonVariant.primary =>
-        FilledButton(onPressed: effectiveOnPressed, child: child),
-      AppButtonVariant.secondary =>
-        OutlinedButton(onPressed: effectiveOnPressed, child: child),
-      AppButtonVariant.text =>
-        TextButton(onPressed: effectiveOnPressed, child: child),
+      AppButtonVariant.primary => FilledButton(
+        onPressed: effectiveOnPressed,
+        child: child,
+      ),
+      AppButtonVariant.secondary => OutlinedButton(
+        onPressed: effectiveOnPressed,
+        child: child,
+      ),
+      AppButtonVariant.text => TextButton(
+        onPressed: effectiveOnPressed,
+        child: child,
+      ),
     };
 
     if (!fullWidth) return button;
@@ -57,11 +63,7 @@ class _Content extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, size: 20),
-        const SizedBox(width: 8),
-        Text(label),
-      ],
+      children: [Icon(icon, size: 20), const SizedBox(width: 8), Text(label)],
     );
   }
 }

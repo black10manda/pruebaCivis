@@ -9,14 +9,8 @@ class AuthRepository {
 
   User? get currentUser => _auth.currentUser;
 
-  Future<void> signIn({
-    required String email,
-    required String password,
-  }) async {
-    await _auth.signInWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
+  Future<void> signIn({required String email, required String password}) async {
+    await _auth.signInWithEmailAndPassword(email: email, password: password);
   }
 
   Future<void> signOut() => _auth.signOut();

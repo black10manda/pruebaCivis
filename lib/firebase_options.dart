@@ -65,5 +65,4 @@ class DefaultFirebaseOptions {
     storageBucket: 'pruebatecnica-1b3d7.firebasestorage.app',
     iosBundleId: 'com.prueba.prueba',
   );
-
 }

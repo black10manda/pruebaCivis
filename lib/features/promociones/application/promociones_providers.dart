@@ -32,30 +32,33 @@ final filtroPromocionesProvider = StateProvider<FiltroPromociones>((ref) {
   return FiltroPromociones.todas;
 });
 
-final promocionesFiltradasProvider =
-    Provider<AsyncValue<List<Promocion>>>((ref) {
+final promocionesFiltradasProvider = Provider<AsyncValue<List<Promocion>>>((
+  ref,
+) {
   final filtro = ref.watch(filtroPromocionesProvider);
   final async = ref.watch(promocionesStreamProvider);
   return async.whenData((list) {
     return switch (filtro) {
       FiltroPromociones.todas => list,
-      FiltroPromociones.activas =>
-        list.where((p) => p.activo).toList(),
-      FiltroPromociones.inactivas =>
-        list.where((p) => !p.activo).toList(),
+      FiltroPromociones.activas => list.where((p) => p.activo).toList(),
+      FiltroPromociones.inactivas => list.where((p) => !p.activo).toList(),
     };
   });
 });
 
 final promocionesActivasCountProvider = Provider<int>((ref) {
-  return ref.watch(promocionesStreamProvider).maybeWhen(
+  return ref
+      .watch(promocionesStreamProvider)
+      .maybeWhen(
         data: (list) => list.where((p) => p.activo).length,
         orElse: () => 0,
       );
 });
 
 final promocionesInactivasCountProvider = Provider<int>((ref) {
-  return ref.watch(promocionesStreamProvider).maybeWhen(
+  return ref
+      .watch(promocionesStreamProvider)
+      .maybeWhen(
         data: (list) => list.where((p) => !p.activo).length,
         orElse: () => 0,
       );

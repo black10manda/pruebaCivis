@@ -17,7 +17,7 @@ class EnvioController extends AutoDisposeAsyncNotifier<void> {
 
 final envioControllerProvider =
     AutoDisposeAsyncNotifierProvider<EnvioController, void>(
-  EnvioController.new,
-);
+      EnvioController.new,
+    );
 
 final enviandoIdProvider = StateProvider<String?>((ref) => null);

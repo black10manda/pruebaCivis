@@ -114,9 +114,7 @@ class _PromocionFormScreenState extends ConsumerState<PromocionFormScreen> {
         ..showSnackBar(
           SnackBar(
             content: Text(
-              widget.esEdicion
-                  ? 'Promoción actualizada'
-                  : 'Promoción creada',
+              widget.esEdicion ? 'Promoción actualizada' : 'Promoción creada',
             ),
           ),
         );
@@ -143,78 +141,96 @@ class _PromocionFormScreenState extends ConsumerState<PromocionFormScreen> {
       );
     });
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          widget.esEdicion ? 'Editar promoción' : 'Nueva promoción',
+    return PopScope(
+      canPop: !isLoading,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            widget.esEdicion ? 'Editar promoción' : 'Nueva promoción',
+          ),
         ),
-      ),
-      body: SafeArea(
-        child: AbsorbPointer(
-          absorbing: isLoading,
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  _ImagenPicker(
-                    imagen: _imagen,
-                    imagenUrl: _imagenUrl,
-                    onSeleccionar: _seleccionarImagen,
-                    onQuitar: _quitarImagen,
-                  ),
-                  const SizedBox(height: 20),
-                  AppTextField(
-                    controller: _tituloController,
-                    label: 'Título',
-                    textInputAction: TextInputAction.next,
-                    maxLength: 60,
-                    validator: (v) => Validators.combinar([
-                      () => Validators.requerido(v, campo: 'Título'),
-                      () => Validators.longitudMaxima(v, max: 60, campo: 'Título'),
-                    ]),
-                  ),
-                  const SizedBox(height: 16),
-                  AppTextField(
-                    controller: _descripcionController,
-                    label: 'Descripción',
-                    textInputAction: TextInputAction.newline,
-                    maxLines: 4,
-                    minLines: 3,
-                    maxLength: 280,
-                    validator: (v) => Validators.combinar([
-                      () => Validators.requerido(v, campo: 'Descripción'),
-                      () => Validators.longitudMaxima(v, max: 280, campo: 'Descripción'),
-                    ]),
-                  ),
-                  const SizedBox(height: 16),
-                  _FechaTile(
-                    fecha: fechaFormateada,
-                    onTap: _seleccionarFecha,
-                  ),
-                  const SizedBox(height: 12),
-                  Card(
-                    child: SwitchListTile(
-                      title: const Text('Activa'),
-                      subtitle: Text(
-                        _activo
-                            ? 'Visible y disponible para envío'
-                            : 'Oculta de envíos',
-                        style: theme.textTheme.bodySmall,
-                      ),
-                      value: _activo,
-                      onChanged: (v) => setState(() => _activo = v),
+        body: SafeArea(
+          child: AbsorbPointer(
+            absorbing: isLoading,
+            child: Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(20),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 600),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _ImagenPicker(
+                          imagen: _imagen,
+                          imagenUrl: _imagenUrl,
+                          onSeleccionar: _seleccionarImagen,
+                          onQuitar: _quitarImagen,
+                        ),
+                        const SizedBox(height: 20),
+                        AppTextField(
+                          controller: _tituloController,
+                          label: 'Título',
+                          textInputAction: TextInputAction.next,
+                          maxLength: 60,
+                          validator: (v) => Validators.combinar([
+                            () => Validators.requerido(v, campo: 'Título'),
+                            () => Validators.longitudMaxima(
+                              v,
+                              max: 60,
+                              campo: 'Título',
+                            ),
+                          ]),
+                        ),
+                        const SizedBox(height: 16),
+                        AppTextField(
+                          controller: _descripcionController,
+                          label: 'Descripción',
+                          textInputAction: TextInputAction.newline,
+                          maxLines: 4,
+                          minLines: 3,
+                          maxLength: 280,
+                          validator: (v) => Validators.combinar([
+                            () => Validators.requerido(v, campo: 'Descripción'),
+                            () => Validators.longitudMaxima(
+                              v,
+                              max: 280,
+                              campo: 'Descripción',
+                            ),
+                          ]),
+                        ),
+                        const SizedBox(height: 16),
+                        _FechaTile(
+                          fecha: fechaFormateada,
+                          onTap: _seleccionarFecha,
+                        ),
+                        const SizedBox(height: 12),
+                        Card(
+                          child: SwitchListTile(
+                            title: const Text('Activa'),
+                            subtitle: Text(
+                              _activo
+                                  ? 'Visible y disponible para envío'
+                                  : 'Oculta de envíos',
+                              style: theme.textTheme.bodySmall,
+                            ),
+                            value: _activo,
+                            onChanged: (v) => setState(() => _activo = v),
+                          ),
+                        ),
+                        const SizedBox(height: 28),
+                        AppButton(
+                          label: widget.esEdicion
+                              ? 'Guardar cambios'
+                              : 'Crear promoción',
+                          onPressed: _guardar,
+                          isLoading: isLoading,
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 28),
-                  AppButton(
-                    label: widget.esEdicion ? 'Guardar cambios' : 'Crear promoción',
-                    onPressed: _guardar,
-                    isLoading: isLoading,
-                  ),
-                ],
+                ),
               ),
             ),
           ),
@@ -235,10 +251,7 @@ class _FechaTile extends StatelessWidget {
     final theme = Theme.of(context);
     return Card(
       child: ListTile(
-        leading: Icon(
-          Icons.event_outlined,
-          color: theme.colorScheme.primary,
-        ),
+        leading: Icon(Icons.event_outlined, color: theme.colorScheme.primary),
         title: const Text('Fecha'),
         subtitle: Text(fecha),
         trailing: const Icon(Icons.chevron_right),
@@ -273,8 +286,9 @@ class _ImagenPicker extends StatelessWidget {
       child: Container(
         height: 180,
         decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceContainerHighest
-              .withValues(alpha: 0.4),
+          color: theme.colorScheme.surfaceContainerHighest.withValues(
+            alpha: 0.4,
+          ),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: theme.colorScheme.outlineVariant),
         ),
@@ -323,11 +337,7 @@ class _ImagenPicker extends StatelessWidget {
                     onTap: onQuitar,
                     child: const Padding(
                       padding: EdgeInsets.all(6),
-                      child: Icon(
-                        Icons.close,
-                        color: Colors.white,
-                        size: 20,
-                      ),
+                      child: Icon(Icons.close, color: Colors.white, size: 20),
                     ),
                   ),
                 ),

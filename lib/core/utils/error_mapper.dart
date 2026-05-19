@@ -1,7 +1,8 @@
 class ErrorMapper {
   const ErrorMapper._();
 
-  static const String _genericoAuth = 'No se pudo iniciar sesión. Intenta de nuevo.';
+  static const String _genericoAuth =
+      'No se pudo iniciar sesión. Intenta de nuevo.';
   static const String _genericoData = 'Ocurrió un error. Intenta de nuevo.';
 
   static String authFromCode(String? code) {

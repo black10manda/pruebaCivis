@@ -22,8 +22,7 @@ class AsyncValueView<T> extends StatelessWidget {
     return value.when(
       data: data,
       loading: () =>
-          loading?.call() ??
-          const Center(child: CircularProgressIndicator()),
+          loading?.call() ?? const Center(child: CircularProgressIndicator()),
       error: (e, st) =>
           error?.call(e, st) ?? _DefaultError(error: e, onRetry: onRetry),
     );
@@ -45,11 +44,7 @@ class _DefaultError extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              Icons.error_outline,
-              color: theme.colorScheme.error,
-              size: 40,
-            ),
+            Icon(Icons.error_outline, color: theme.colorScheme.error, size: 40),
             const SizedBox(height: 12),
             Text(
               'Ocurrió un error',

@@ -105,8 +105,10 @@ class PromocionCard extends StatelessWidget {
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            DateFormat('d MMM', 'es')
-                                .format(promocion.enviadaEn!),
+                            DateFormat(
+                              'd MMM',
+                              'es',
+                            ).format(promocion.enviadaEn!),
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.onSurfaceVariant,
                             ),
@@ -123,8 +125,7 @@ class PromocionCard extends StatelessWidget {
                           EstadoBadge.activa(context)
                         else
                           EstadoBadge.inactiva(context),
-                        if (promocion.yaEnviada)
-                          EstadoBadge.enviada(context),
+                        if (promocion.yaEnviada) EstadoBadge.enviada(context),
                       ],
                     ),
                     if (_puedeEnviar) ...[

@@ -8,25 +8,40 @@ import '../../features/promociones/domain/promocion.dart';
 import '../../features/promociones/presentation/lista_promociones_screen.dart';
 import '../../features/promociones/presentation/promocion_form_screen.dart';
 import '../../shared/constants.dart';
+import '../widgets/splash_screen.dart';
+
+const String _splashPath = '/';
 
 final goRouterProvider = Provider<GoRouter>((ref) {
   final notifier = _AuthRouterNotifier(ref);
 
   return GoRouter(
-    initialLocation: AppRoutes.login,
+    initialLocation: _splashPath,
     refreshListenable: notifier,
     redirect: (context, state) {
       final auth = ref.read(authStateProvider);
-      if (auth.isLoading) return null;
+      final loc = state.matchedLocation;
+
+      if (auth.isLoading) {
+        return loc == _splashPath ? null : _splashPath;
+      }
 
       final loggedIn = auth.valueOrNull != null;
-      final loggingIn = state.matchedLocation == AppRoutes.login;
 
+      if (loc == _splashPath) {
+        return loggedIn ? AppRoutes.home : AppRoutes.login;
+      }
+
+      final loggingIn = loc == AppRoutes.login;
       if (!loggedIn) return loggingIn ? null : AppRoutes.login;
       if (loggingIn) return AppRoutes.home;
       return null;
     },
     routes: [
+      GoRoute(
+        path: _splashPath,
+        builder: (context, state) => const SplashScreen(),
+      ),
       GoRoute(
         path: AppRoutes.login,
         builder: (context, state) => const LoginScreen(),
@@ -49,9 +64,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         ],
       ),
     ],
-    errorBuilder: (context, state) => Scaffold(
-      body: Center(child: Text('Ruta no encontrada: ${state.uri}')),
-    ),
+    errorBuilder: (context, state) =>
+        Scaffold(body: Center(child: Text('Ruta no encontrada: ${state.uri}'))),
   );
 });
 

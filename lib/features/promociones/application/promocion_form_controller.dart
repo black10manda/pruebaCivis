@@ -25,5 +25,5 @@ class PromocionFormController extends AutoDisposeAsyncNotifier<void> {
 
 final promocionFormControllerProvider =
     AutoDisposeAsyncNotifierProvider<PromocionFormController, void>(
-  PromocionFormController.new,
-);
+      PromocionFormController.new,
+    );

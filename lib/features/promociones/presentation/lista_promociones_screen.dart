@@ -25,9 +25,7 @@ class ListaPromocionesScreen extends ConsumerWidget {
         data: (_) {
           ScaffoldMessenger.of(context)
             ..hideCurrentSnackBar()
-            ..showSnackBar(
-              const SnackBar(content: Text('Promoción enviada')),
-            );
+            ..showSnackBar(const SnackBar(content: Text('Promoción enviada')));
         },
         error: (e, _) {
           ScaffoldMessenger.of(context)
@@ -74,10 +72,8 @@ class ListaPromocionesScreen extends ConsumerWidget {
                       return PromocionCard(
                         promocion: p,
                         enviando: enviandoId == p.id,
-                        onTap: () => context.push(
-                          AppRoutes.editarPromocion,
-                          extra: p,
-                        ),
+                        onTap: () =>
+                            context.push(AppRoutes.editarPromocion, extra: p),
                         onEnviar: () => _enviar(ref, p),
                       );
                     },
