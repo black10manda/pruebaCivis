@@ -7,31 +7,33 @@ import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/fade_in_up.dart';
 import 'auth_footer_prompt.dart';
 
-/// Card con el formulario de inicio de sesión.
-/// No conoce de Riverpod: recibe controllers y callbacks desde la pantalla.
-class LoginForm extends StatefulWidget {
-  const LoginForm({
+/// Card con el formulario de registro.
+class RegisterForm extends StatefulWidget {
+  const RegisterForm({
     super.key,
     required this.emailController,
     required this.passwordController,
+    required this.confirmController,
     required this.isLoading,
     required this.onSubmit,
-    required this.onRegister,
+    required this.onLogin,
   });
 
   final TextEditingController emailController;
   final TextEditingController passwordController;
+  final TextEditingController confirmController;
   final bool isLoading;
   final Future<void> Function() onSubmit;
-  final VoidCallback onRegister;
+  final VoidCallback onLogin;
 
   @override
-  State<LoginForm> createState() => LoginFormState();
+  State<RegisterForm> createState() => RegisterFormState();
 }
 
-class LoginFormState extends State<LoginForm> {
+class RegisterFormState extends State<RegisterForm> {
   final formKey = GlobalKey<FormState>();
-  bool _obscure = true;
+  bool _obscurePassword = true;
+  bool _obscureConfirm = true;
 
   bool validate() => formKey.currentState?.validate() ?? false;
 
@@ -61,7 +63,7 @@ class LoginFormState extends State<LoginForm> {
             FadeInUp(
               delay: const Duration(milliseconds: 180),
               child: Text(
-                'Bienvenido',
+                'Crear cuenta',
                 style: TextStyle(
                   fontSize: 26.sp,
                   fontWeight: FontWeight.w700,
@@ -74,7 +76,7 @@ class LoginFormState extends State<LoginForm> {
             FadeInUp(
               delay: const Duration(milliseconds: 230),
               child: Text(
-                'Inicia sesión para continuar',
+                'Regístrate para empezar',
                 style: TextStyle(
                   fontSize: 14.sp,
                   color: cs.onSurfaceVariant,
@@ -101,51 +103,90 @@ class LoginFormState extends State<LoginForm> {
               child: AppTextField(
                 controller: widget.passwordController,
                 label: 'Contraseña',
-                obscureText: _obscure,
-                textInputAction: TextInputAction.done,
-                autofillHints: const [AutofillHints.password],
+                obscureText: _obscurePassword,
+                textInputAction: TextInputAction.next,
+                autofillHints: const [AutofillHints.newPassword],
                 enabled: !widget.isLoading,
                 validator: Validators.password,
                 prefixIcon: const Icon(Icons.lock_outline),
-                suffixIcon: IconButton(
-                  icon: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 180),
-                    transitionBuilder: (child, anim) => ScaleTransition(
-                      scale: anim,
-                      child: FadeTransition(opacity: anim, child: child),
-                    ),
-                    child: Icon(
-                      _obscure
-                          ? Icons.visibility_off_outlined
-                          : Icons.visibility_outlined,
-                      key: ValueKey(_obscure),
-                    ),
+                suffixIcon: _ObscureToggle(
+                  obscured: _obscurePassword,
+                  onPressed: () => setState(
+                    () => _obscurePassword = !_obscurePassword,
                   ),
-                  onPressed: () => setState(() => _obscure = !_obscure),
+                ),
+              ),
+            ),
+            SizedBox(height: 16.h),
+            FadeInUp(
+              delay: const Duration(milliseconds: 380),
+              child: AppTextField(
+                controller: widget.confirmController,
+                label: 'Confirmar contraseña',
+                obscureText: _obscureConfirm,
+                textInputAction: TextInputAction.done,
+                enabled: !widget.isLoading,
+                validator: (v) => Validators.combinar([
+                  () => Validators.requerido(v, campo: 'Confirmación'),
+                  () => Validators.coincide(v, widget.passwordController.text),
+                ]),
+                prefixIcon: const Icon(Icons.lock_outline),
+                suffixIcon: _ObscureToggle(
+                  obscured: _obscureConfirm,
+                  onPressed: () => setState(
+                    () => _obscureConfirm = !_obscureConfirm,
+                  ),
                 ),
                 onSubmitted: (_) => widget.onSubmit(),
               ),
             ),
             SizedBox(height: 28.h),
             FadeInUp(
-              delay: const Duration(milliseconds: 380),
+              delay: const Duration(milliseconds: 430),
               child: AppButton(
-                label: 'Iniciar sesión',
+                label: 'Crear cuenta',
                 onPressed: widget.onSubmit,
                 isLoading: widget.isLoading,
               ),
             ),
             SizedBox(height: 8.h),
             FadeInUp(
-              delay: const Duration(milliseconds: 430),
+              delay: const Duration(milliseconds: 480),
               child: AuthFooterPrompt(
-                text: '¿No tienes cuenta?',
-                actionLabel: 'Regístrate',
-                onAction: widget.onRegister,
+                text: '¿Ya tienes cuenta?',
+                actionLabel: 'Inicia sesión',
+                onAction: widget.onLogin,
                 enabled: !widget.isLoading,
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ObscureToggle extends StatelessWidget {
+  const _ObscureToggle({required this.obscured, required this.onPressed});
+
+  final bool obscured;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      onPressed: onPressed,
+      icon: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 180),
+        transitionBuilder: (child, anim) => ScaleTransition(
+          scale: anim,
+          child: FadeTransition(opacity: anim, child: child),
+        ),
+        child: Icon(
+          obscured
+              ? Icons.visibility_off_outlined
+              : Icons.visibility_outlined,
+          key: ValueKey(obscured),
         ),
       ),
     );

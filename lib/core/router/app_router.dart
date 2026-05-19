@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/auth/application/auth_providers.dart';
 import '../../features/auth/presentation/login_screen.dart';
+import '../../features/auth/presentation/register_screen.dart';
 import '../../features/promociones/domain/promocion.dart';
 import '../../features/promociones/presentation/lista_promociones_screen.dart';
 import '../../features/promociones/presentation/promocion_form_screen.dart';
@@ -32,9 +33,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         return loggedIn ? AppRoutes.home : AppRoutes.login;
       }
 
-      final loggingIn = loc == AppRoutes.login;
-      if (!loggedIn) return loggingIn ? null : AppRoutes.login;
-      if (loggingIn) return AppRoutes.home;
+      final esPantallaAuth =
+          loc == AppRoutes.login || loc == AppRoutes.register;
+      if (!loggedIn) return esPantallaAuth ? null : AppRoutes.login;
+      if (esPantallaAuth) return AppRoutes.home;
       return null;
     },
     routes: [
@@ -45,6 +47,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.login,
         builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.register,
+        builder: (context, state) => const RegisterScreen(),
       ),
       GoRoute(
         path: AppRoutes.home,

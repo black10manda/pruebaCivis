@@ -40,6 +40,15 @@ class Validators {
     return null;
   }
 
+  static String? coincide(
+    String? value,
+    String original, {
+    String mensaje = 'Las contraseñas no coinciden',
+  }) {
+    if (value != original) return mensaje;
+    return null;
+  }
+
   static String? combinar(List<String? Function()> validadores) {
     for (final v in validadores) {
       final result = v();

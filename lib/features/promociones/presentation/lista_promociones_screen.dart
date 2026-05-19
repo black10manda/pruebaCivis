@@ -21,25 +21,6 @@ class ListaPromocionesScreen extends ConsumerWidget {
     final async = ref.watch(promocionesFiltradasProvider);
     final enviandoId = ref.watch(enviandoIdProvider);
 
-    ref.listen<AsyncValue<void>>(envioControllerProvider, (_, next) {
-      next.whenOrNull(
-        data: (_) {
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(
-              const SnackBar(content: Text('Promoción enviada')),
-            );
-        },
-        error: (e, _) {
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(
-              SnackBar(content: Text(ErrorMapper.fromException(e))),
-            );
-        },
-      );
-    });
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Promociones'),
@@ -77,7 +58,7 @@ class ListaPromocionesScreen extends ConsumerWidget {
                         enviando: enviandoId == p.id,
                         onTap: () =>
                             context.push(AppRoutes.editarPromocion, extra: p),
-                        onEnviar: () => _enviar(ref, p),
+                        onEnviar: () => _enviar(context, ref, p),
                       );
                     },
                   ),
@@ -95,10 +76,36 @@ class ListaPromocionesScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _enviar(WidgetRef ref, Promocion promocion) async {
+  Future<void> _enviar(
+    BuildContext context,
+    WidgetRef ref,
+    Promocion promocion,
+  ) async {
     ref.read(enviandoIdProvider.notifier).state = promocion.id;
-    await ref.read(envioControllerProvider.notifier).enviar(promocion.id);
+    final ok = await ref
+        .read(envioControllerProvider.notifier)
+        .enviar(promocion.id);
     ref.read(enviandoIdProvider.notifier).state = null;
+
+    if (!context.mounted) return;
+    final messenger = ScaffoldMessenger.of(context);
+    messenger.hideCurrentSnackBar();
+    if (ok) {
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Promoción enviada')),
+      );
+    } else {
+      final error = ref.read(envioControllerProvider).error;
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            error == null
+                ? 'No se pudo enviar la promoción.'
+                : ErrorMapper.fromException(error),
+          ),
+        ),
+      );
+    }
   }
 
   Future<void> _confirmarLogout(BuildContext context, WidgetRef ref) async {

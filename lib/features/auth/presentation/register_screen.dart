@@ -6,22 +6,23 @@ import 'package:go_router/go_router.dart';
 import '../../../core/utils/error_mapper.dart';
 import '../../../core/widgets/fade_in_up.dart';
 import '../../../shared/constants.dart';
-import '../application/login_controller.dart';
+import '../application/register_controller.dart';
 import 'widgets/auth_brand_hero.dart';
-import 'widgets/login_form.dart';
+import 'widgets/register_form.dart';
 
-class LoginScreen extends ConsumerStatefulWidget {
-  const LoginScreen({super.key});
+class RegisterScreen extends ConsumerStatefulWidget {
+  const RegisterScreen({super.key});
 
   @override
-  ConsumerState<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends ConsumerState<LoginScreen>
+class _RegisterScreenState extends ConsumerState<RegisterScreen>
     with SingleTickerProviderStateMixin {
-  final _formKey = GlobalKey<LoginFormState>();
+  final _formKey = GlobalKey<RegisterFormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmController = TextEditingController();
 
   late final AnimationController _shakeController = AnimationController(
     vsync: this,
@@ -43,6 +44,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     _shakeController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmController.dispose();
     super.dispose();
   }
 
@@ -50,20 +52,38 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     final form = _formKey.currentState;
     if (form == null || !form.validate()) return;
     FocusScope.of(context).unfocus();
-    await ref
-        .read(loginControllerProvider.notifier)
-        .signIn(
+
+    final ok = await ref
+        .read(registerControllerProvider.notifier)
+        .signUp(
           email: _emailController.text.trim(),
           password: _passwordController.text,
         );
+
+    if (!mounted) return;
+    if (ok) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          const SnackBar(content: Text('Cuenta creada correctamente')),
+        );
+    }
+  }
+
+  void _goToLogin() {
+    if (context.canPop()) {
+      context.pop();
+    } else {
+      context.go(AppRoutes.login);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(loginControllerProvider);
+    final state = ref.watch(registerControllerProvider);
     final isLoading = state.isLoading;
 
-    ref.listen<AsyncValue<void>>(loginControllerProvider, (prev, next) {
+    ref.listen<AsyncValue<void>>(registerControllerProvider, (prev, next) {
       next.whenOrNull(
         error: (e, _) {
           _shakeController.forward(from: 0);
@@ -104,13 +124,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                         offset: Offset(_shake.value, 0),
                         child: child,
                       ),
-                      child: LoginForm(
+                      child: RegisterForm(
                         key: _formKey,
                         emailController: _emailController,
                         passwordController: _passwordController,
+                        confirmController: _confirmController,
                         isLoading: isLoading,
                         onSubmit: _submit,
-                        onRegister: () => context.push(AppRoutes.register),
+                        onLogin: _goToLogin,
                       ),
                     ),
                   ),

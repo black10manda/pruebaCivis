@@ -15,6 +15,10 @@ class ErrorMapper {
       case 'wrong-password':
       case 'invalid-credential':
         return 'Correo o contraseña incorrectos.';
+      case 'email-already-in-use':
+        return 'Ese correo ya está registrado.';
+      case 'weak-password':
+        return 'La contraseña es demasiado débil.';
       case 'too-many-requests':
         return 'Demasiados intentos. Espera un momento e intenta de nuevo.';
       case 'network-request-failed':

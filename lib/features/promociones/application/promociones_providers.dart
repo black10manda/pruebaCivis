@@ -25,6 +25,10 @@ final promocionesRepositoryProvider = Provider<PromocionesRepository>((ref) {
 });
 
 final promocionesStreamProvider = StreamProvider<List<Promocion>>((ref) {
+  final user = ref.watch(authStateProvider).valueOrNull;
+  if (user == null) {
+    return Stream.value(const <Promocion>[]);
+  }
   return ref.watch(promocionesRepositoryProvider).watchAll();
 });
 
