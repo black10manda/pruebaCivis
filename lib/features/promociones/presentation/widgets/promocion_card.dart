@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 
 import '../../domain/promocion.dart';
@@ -60,66 +61,70 @@ class PromocionCard extends StatelessWidget {
                   ),
                 ),
               Padding(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16.w),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       promocion.titulo,
                       style: theme.textTheme.titleMedium?.copyWith(
+                        fontSize: 16.sp,
                         fontWeight: FontWeight.w700,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 6),
+                    SizedBox(height: 6.h),
                     Text(
                       promocion.descripcion,
                       style: theme.textTheme.bodyMedium?.copyWith(
+                        fontSize: 14.sp,
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12.h),
                     Row(
                       children: [
                         Icon(
                           Icons.event_outlined,
-                          size: 16,
+                          size: 16.sp,
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
-                        const SizedBox(width: 4),
+                        SizedBox(width: 4.w),
                         Text(
                           fecha,
                           style: theme.textTheme.bodySmall?.copyWith(
+                            fontSize: 12.sp,
                             color: theme.colorScheme.onSurfaceVariant,
                           ),
                         ),
                         if (promocion.enviadaEn != null) ...[
-                          const SizedBox(width: 12),
+                          SizedBox(width: 12.w),
                           Icon(
                             Icons.send_outlined,
-                            size: 16,
+                            size: 16.sp,
                             color: theme.colorScheme.onSurfaceVariant,
                           ),
-                          const SizedBox(width: 4),
+                          SizedBox(width: 4.w),
                           Text(
                             DateFormat(
                               'd MMM',
                               'es',
                             ).format(promocion.enviadaEn!),
                             style: theme.textTheme.bodySmall?.copyWith(
+                              fontSize: 12.sp,
                               color: theme.colorScheme.onSurfaceVariant,
                             ),
                           ),
                         ],
                       ],
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12.h),
                     Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
+                      spacing: 8.w,
+                      runSpacing: 8.h,
                       children: [
                         if (promocion.activo)
                           EstadoBadge.activa(context)
@@ -129,16 +134,16 @@ class PromocionCard extends StatelessWidget {
                       ],
                     ),
                     if (_puedeEnviar) ...[
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16.h),
                       SizedBox(
                         width: double.infinity,
                         child: FilledButton.icon(
                           onPressed: enviando ? null : onEnviar,
                           icon: enviando
-                              ? const SizedBox(
-                                  width: 18,
-                                  height: 18,
-                                  child: CircularProgressIndicator(
+                              ? SizedBox(
+                                  width: 18.w,
+                                  height: 18.w,
+                                  child: const CircularProgressIndicator(
                                     strokeWidth: 2.4,
                                     color: Colors.white,
                                   ),

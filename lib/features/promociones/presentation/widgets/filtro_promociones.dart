@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../application/promociones_providers.dart';
 
@@ -14,21 +15,30 @@ class FiltroPromocionesBar extends ConsumerWidget {
     final total = activas + inactivas;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+      padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 12.h),
       child: SegmentedButton<FiltroPromociones>(
         showSelectedIcon: false,
         segments: [
           ButtonSegment(
             value: FiltroPromociones.todas,
-            label: Text('Todas ($total)'),
+            label: Text(
+              'Todas ($total)',
+              style: TextStyle(fontSize: 13.sp),
+            ),
           ),
           ButtonSegment(
             value: FiltroPromociones.activas,
-            label: Text('Activas ($activas)'),
+            label: Text(
+              'Activas ($activas)',
+              style: TextStyle(fontSize: 13.sp),
+            ),
           ),
           ButtonSegment(
             value: FiltroPromociones.inactivas,
-            label: Text('Inactivas ($inactivas)'),
+            label: Text(
+              'Inactivas ($inactivas)',
+              style: TextStyle(fontSize: 13.sp),
+            ),
           ),
         ],
         selected: {filtro},

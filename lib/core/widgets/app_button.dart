@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 enum AppButtonVariant { primary, secondary, text }
 
@@ -24,10 +25,10 @@ class AppButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final effectiveOnPressed = isLoading ? null : onPressed;
     final child = isLoading
-        ? const SizedBox(
-            height: 22,
-            width: 22,
-            child: CircularProgressIndicator(strokeWidth: 2.4),
+        ? SizedBox(
+            height: 22.w,
+            width: 22.w,
+            child: const CircularProgressIndicator(strokeWidth: 2.4),
           )
         : _Content(label: label, icon: icon);
 
@@ -63,7 +64,11 @@ class _Content extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
-      children: [Icon(icon, size: 20), const SizedBox(width: 8), Text(label)],
+      children: [
+        Icon(icon, size: 20.sp),
+        SizedBox(width: 8.w),
+        Text(label),
+      ],
     );
   }
 }

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
@@ -154,9 +155,9 @@ class _PromocionFormScreenState extends ConsumerState<PromocionFormScreen> {
             absorbing: isLoading,
             child: Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(20.w),
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 600),
+                  constraints: BoxConstraints(maxWidth: 600.w),
                   child: Form(
                     key: _formKey,
                     child: Column(
@@ -168,7 +169,7 @@ class _PromocionFormScreenState extends ConsumerState<PromocionFormScreen> {
                           onSeleccionar: _seleccionarImagen,
                           onQuitar: _quitarImagen,
                         ),
-                        const SizedBox(height: 20),
+                        SizedBox(height: 20.h),
                         AppTextField(
                           controller: _tituloController,
                           label: 'Título',
@@ -183,7 +184,7 @@ class _PromocionFormScreenState extends ConsumerState<PromocionFormScreen> {
                             ),
                           ]),
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: 16.h),
                         AppTextField(
                           controller: _descripcionController,
                           label: 'Descripción',
@@ -200,26 +201,31 @@ class _PromocionFormScreenState extends ConsumerState<PromocionFormScreen> {
                             ),
                           ]),
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: 16.h),
                         _FechaTile(
                           fecha: fechaFormateada,
                           onTap: _seleccionarFecha,
                         ),
-                        const SizedBox(height: 12),
+                        SizedBox(height: 12.h),
                         Card(
                           child: SwitchListTile(
-                            title: const Text('Activa'),
+                            title: Text(
+                              'Activa',
+                              style: TextStyle(fontSize: 16.sp),
+                            ),
                             subtitle: Text(
                               _activo
                                   ? 'Visible y disponible para envío'
                                   : 'Oculta de envíos',
-                              style: theme.textTheme.bodySmall,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                fontSize: 12.sp,
+                              ),
                             ),
                             value: _activo,
                             onChanged: (v) => setState(() => _activo = v),
                           ),
                         ),
-                        const SizedBox(height: 28),
+                        SizedBox(height: 28.h),
                         AppButton(
                           label: widget.esEdicion
                               ? 'Guardar cambios'
@@ -251,9 +257,13 @@ class _FechaTile extends StatelessWidget {
     final theme = Theme.of(context);
     return Card(
       child: ListTile(
-        leading: Icon(Icons.event_outlined, color: theme.colorScheme.primary),
-        title: const Text('Fecha'),
-        subtitle: Text(fecha),
+        leading: Icon(
+          Icons.event_outlined,
+          color: theme.colorScheme.primary,
+          size: 24.sp,
+        ),
+        title: Text('Fecha', style: TextStyle(fontSize: 16.sp)),
+        subtitle: Text(fecha, style: TextStyle(fontSize: 14.sp)),
         trailing: const Icon(Icons.chevron_right),
         onTap: onTap,
       ),
@@ -282,14 +292,14 @@ class _ImagenPicker extends StatelessWidget {
 
     return InkWell(
       onTap: onSeleccionar,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(16.r),
       child: Container(
-        height: 180,
+        height: 180.h,
         decoration: BoxDecoration(
           color: theme.colorScheme.surfaceContainerHighest.withValues(
             alpha: 0.4,
           ),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(16.r),
           border: Border.all(color: theme.colorScheme.outlineVariant),
         ),
         clipBehavior: Clip.antiAlias,
@@ -312,13 +322,14 @@ class _ImagenPicker extends StatelessWidget {
                   children: [
                     Icon(
                       Icons.add_photo_alternate_outlined,
-                      size: 40,
+                      size: 40.sp,
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8.h),
                     Text(
                       'Toca para agregar imagen (opcional)',
                       style: theme.textTheme.bodyMedium?.copyWith(
+                        fontSize: 14.sp,
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
@@ -327,17 +338,21 @@ class _ImagenPicker extends StatelessWidget {
               ),
             if (_tieneImagen)
               Positioned(
-                top: 8,
-                right: 8,
+                top: 8.h,
+                right: 8.w,
                 child: Material(
                   color: Colors.black54,
                   shape: const CircleBorder(),
                   child: InkWell(
                     customBorder: const CircleBorder(),
                     onTap: onQuitar,
-                    child: const Padding(
-                      padding: EdgeInsets.all(6),
-                      child: Icon(Icons.close, color: Colors.white, size: 20),
+                    child: Padding(
+                      padding: EdgeInsets.all(6.w),
+                      child: Icon(
+                        Icons.close,
+                        color: Colors.white,
+                        size: 20.sp,
+                      ),
                     ),
                   ),
                 ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/utils/error_mapper.dart';
@@ -25,7 +26,9 @@ class ListaPromocionesScreen extends ConsumerWidget {
         data: (_) {
           ScaffoldMessenger.of(context)
             ..hideCurrentSnackBar()
-            ..showSnackBar(const SnackBar(content: Text('Promoción enviada')));
+            ..showSnackBar(
+              const SnackBar(content: Text('Promoción enviada')),
+            );
         },
         error: (e, _) {
           ScaffoldMessenger.of(context)
@@ -63,10 +66,10 @@ class ListaPromocionesScreen extends ConsumerWidget {
                     ref.invalidate(promocionesStreamProvider);
                   },
                   child: ListView.separated(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 96),
+                    padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 96.h),
                     physics: const AlwaysScrollableScrollPhysics(),
                     itemCount: lista.length,
-                    separatorBuilder: (_, _) => const SizedBox(height: 12),
+                    separatorBuilder: (_, _) => SizedBox(height: 12.h),
                     itemBuilder: (context, i) {
                       final p = lista[i];
                       return PromocionCard(
@@ -139,25 +142,26 @@ class _EstadoVacio extends ConsumerWidget {
 
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: EdgeInsets.all(32.w),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
               Icons.campaign_outlined,
-              size: 56,
+              size: 56.sp,
               color: theme.colorScheme.onSurfaceVariant,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
             Text(
               mensaje,
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyLarge?.copyWith(
+                fontSize: 16.sp,
                 color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
             if (filtro == FiltroPromociones.todas) ...[
-              const SizedBox(height: 24),
+              SizedBox(height: 24.h),
               FilledButton.icon(
                 onPressed: () => context.push(AppRoutes.nuevaPromocion),
                 icon: const Icon(Icons.add),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AsyncValueView<T> extends StatelessWidget {
   const AsyncValueView({
@@ -40,25 +41,29 @@ class _DefaultError extends StatelessWidget {
     final theme = Theme.of(context);
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(24.w),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.error_outline, color: theme.colorScheme.error, size: 40),
-            const SizedBox(height: 12),
+            Icon(
+              Icons.error_outline,
+              color: theme.colorScheme.error,
+              size: 40.sp,
+            ),
+            SizedBox(height: 12.h),
             Text(
               'Ocurrió un error',
               style: theme.textTheme.titleMedium,
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 6),
+            SizedBox(height: 6.h),
             Text(
               error.toString(),
               style: theme.textTheme.bodySmall,
               textAlign: TextAlign.center,
             ),
             if (onRetry != null) ...[
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
               OutlinedButton.icon(
                 onPressed: onRetry,
                 icon: const Icon(Icons.refresh),

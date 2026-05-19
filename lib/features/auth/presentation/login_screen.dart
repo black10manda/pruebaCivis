@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../core/utils/error_mapper.dart';
 import '../../../core/utils/validators.dart';
@@ -60,9 +61,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 32.h),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 420),
+              constraints: BoxConstraints(maxWidth: 420.w),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -70,36 +71,38 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Container(
-                      width: 72,
-                      height: 72,
+                      width: 72.w,
+                      height: 72.w,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                         color: theme.colorScheme.primaryContainer,
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(20.r),
                       ),
                       child: Icon(
                         Icons.campaign_outlined,
-                        size: 36,
+                        size: 36.sp,
                         color: theme.colorScheme.onPrimaryContainer,
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24.h),
                     Text(
                       'Bienvenido',
                       style: theme.textTheme.headlineMedium?.copyWith(
+                        fontSize: 28.sp,
                         fontWeight: FontWeight.w700,
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8.h),
                     Text(
                       'Inicia sesión para administrar tus promociones',
                       style: theme.textTheme.bodyMedium?.copyWith(
+                        fontSize: 14.sp,
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 32),
+                    SizedBox(height: 32.h),
                     AppTextField(
                       controller: _emailController,
                       label: 'Correo',
@@ -110,7 +113,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       validator: Validators.email,
                       prefixIcon: const Icon(Icons.email_outlined),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16.h),
                     AppTextField(
                       controller: _passwordController,
                       label: 'Contraseña',
@@ -128,7 +131,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                       onSubmitted: (_) => _submit(),
                     ),
-                    const SizedBox(height: 32),
+                    SizedBox(height: 32.h),
                     AppButton(
                       label: 'Iniciar sesión',
                       onPressed: _submit,
